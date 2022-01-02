@@ -8,11 +8,15 @@ main{
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
+    margin: auto auto;
 }
 
-main > *{
-    
-
-
+.btn-color{
+    color: #fff;
+    background-color: #351c75;
+    border-color: #351c75;
 }
 
+.submit{
+    margin: auto auto;
+}

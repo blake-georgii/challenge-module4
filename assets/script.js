@@ -43,74 +43,81 @@ var questionData = [
             "terminal/bash",
             "for loops",
             "console.log"]
-    }
-]
+    }];
 
 var questCtr = 0;
-var scoreCtr = 0;
-
-function createStart() {
-    $('main').html('<h1>Coding Quiz Challenge</h1>' +
-        '<p>Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!</p>');
-
-    var start = $('<button>').attr('id', 'start').html('Start');
-
-    $('main').append(start);
-}
+var timer = 120;
 
 function nextQuestion() {
     if (questCtr == 0) {
         $('p').remove();
         $('button').remove();
-        $("main").append($("<ol>"));
+        $("main").append($("<ol>").addClass('row'));
+        window.timerFunc = setInterval(function () {
+            timer--;
+            if (timer <= 0) {
+                clearInterval(timerFunc);
+                enterInitials();
+            }
+            $('#timer').text('Time: ' + timer);
+        }, 1000)
     }
 
     $('h1').text(questionData[questCtr].question);
-
+    
     $('li').remove();
     for (var i = 0; i < questionData[questCtr].answers.length; i++) {
-        var li = $("<li>").attr('id', i).addClass("answer").text(questionData[questCtr].answers[i]);;
+        var li = $("<li>").addClass('col-12 btn btn-color answer').attr('id', i).text(questionData[questCtr].answers[i]);;
 
         $('ol').append(li);
     }
     questCtr++;
-
-    $('.answer').click(function answerQuestion(event) {
+    $('.answer').click(function (event) {
         $('h3').remove();
 
         if (questCtr < 5) {
-            if (event.target.id == questionData[questCtr].correct) {
+            if (event.target.id == questionData[questCtr-1].correct) {
                 $('<h3>').text('Correct!').appendTo($('main'));
-                scoreCtr++;
             }
             else {
                 $('<h3>').text('Wrong!').appendTo($('main'));
+                timer -= 15;
             }
             nextQuestion();
         }
         else {
+            if (event.target.id != questionData[questCtr-1].correct) {
+                timer -= 15;
+            }
             enterInitials();
         }
 
     });
+    
 }
 
 function enterInitials() {
-    var finalScore = scoreCtr / questCtr * 100;
+    clearInterval(window.timerFunc);
+
+    $('#timer').text('Time: ' + timer);
     $('h1').text('High scores');
     $('ol').remove();
-    $('<h2>').text('Your final score is ' + finalScore + '.').appendTo($('main'));
+    $('<h2>').text('Your final score is ' + timer + '.').appendTo($('main'));
 
     var div = $('<div>').addClass('row');
     var h2 = $('<h2>').text('Enter initials:').addClass('col-3');
     var textarea = $('<textarea>').addClass('col-7');
-    var button = $('<button>').text('Submit').addClass('col-2');
+    var button = $('<a>').addClass('col-2 btn btn-color submit').text('Submit').attr('role', 'button').attr('href', './assets/highscore.html');
 
     div.append(h2, textarea, button);
 
     $('main').append(div);
 
+    $('.submit').click(function (event) {
+        localStorage.setItem($(event.target).siblings('textarea').val(), timer);
+
+    })
 }
 
-createStart();
+
 $('#start').click(nextQuestion);
