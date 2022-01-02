@@ -47,7 +47,7 @@ var questionData = [
 ]
 
 var questCtr = 0;
-
+var scoreCtr = 0;
 
 function createStart() {
     $('main').html('<h1>Coding Quiz Challenge</h1>' +
@@ -60,7 +60,6 @@ function createStart() {
 
 function nextQuestion() {
     if (questCtr == 0) {
-        
         $('p').remove();
         $('button').remove();
         $("main").append($("<ol>"));
@@ -68,6 +67,7 @@ function nextQuestion() {
 
     $('h1').text(questionData[questCtr].question);
 
+    $('li').remove();
     for (var i = 0; i < questionData[questCtr].answers.length; i++) {
         var li = $("<li>").attr('id', i).addClass("answer").text(questionData[questCtr].answers[i]);;
 
@@ -75,20 +75,42 @@ function nextQuestion() {
     }
     questCtr++;
 
+    $('.answer').click(function answerQuestion(event) {
+        $('h3').remove();
+
+        if (questCtr < 5) {
+            if (event.target.id == questionData[questCtr].correct) {
+                $('<h3>').text('Correct!').appendTo($('main'));
+                scoreCtr++;
+            }
+            else {
+                $('<h3>').text('Wrong!').appendTo($('main'));
+            }
+            nextQuestion();
+        }
+        else {
+            enterInitials();
+        }
+
+    });
+}
+
+function enterInitials() {
+    var finalScore = scoreCtr / questCtr * 100;
+    $('h1').text('High scores');
+    $('ol').remove();
+    $('<h2>').text('Your final score is ' + finalScore + '.').appendTo($('main'));
+
+    var div = $('<div>').addClass('row');
+    var h2 = $('<h2>').text('Enter initials:').addClass('col-3');
+    var textarea = $('<textarea>').addClass('col-7');
+    var button = $('<button>').text('Submit').addClass('col-2');
+
+    div.append(h2, textarea, button);
+
+    $('main').append(div);
+
 }
 
 createStart();
 $('#start').click(nextQuestion);
-
-
-
-$('.answer').click(function answerQuestion(event) {
-
-    if (event.target.id == questionData[questCtr].correct) {
-
-    }
-    else {
-
-    }
-    nextQuestion();
-});
